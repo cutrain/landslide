@@ -58,7 +58,26 @@ class Parser(object):
             if text.startswith(u'\ufeff'):  # check for unicode BOM
                 text = text[1:]
 
-            return markdown.markdown(text, extensions=self.md_extensions)
+            pattern = re.compile(r'^\.include\((.*)\):\s?(\S*).*$', re.MULTILINE)
+            match = re.search(pattern, text)
+            while match is not None:
+                codetype = match[1]
+                filename = match[2]
+                try:
+                    with open(filename, 'r') as f:
+                        code = f.read()
+                    code = code.replace('\n', '\n\t')
+                    text = re.sub(pattern,
+                                  r'\n\t!{}\n\t{}'.format(codetype, code),
+                                  text, 1
+                                 )
+                except FileNotFoundError:
+                    text = re.sub(pattern,
+                                  r'FileNotFound : {}'.format(filename),
+                                  text, 1
+                                 )
+                match = re.search(pattern, text)
+            return markdown.markdown(text, self.md_extensions)
         elif self.format == 'restructuredtext':
             try:
                 from landslide.rst import html_body
