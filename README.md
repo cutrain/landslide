@@ -195,6 +195,17 @@ To generate the presentation as configured, just run:
 
 You can use macros to enhance your presentation:
 
+#### Include file
+
+A notes to your slides using the `.include(<type>):<path>` keyword, eg.:
+
+    # My Slide Title
+    
+    .include(c++):src/a.cpp
+    .include(python):../b.py
+    
+This macro will include your local file with the specified codetype.
+
 #### Notes
 
 Add notes to your slides using the `.notes:` keyword, eg.:
